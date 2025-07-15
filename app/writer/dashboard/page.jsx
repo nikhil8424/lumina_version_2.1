@@ -1,4 +1,4 @@
-import { WriterDashboard } from "@/components/writer-dashboard"
+import WriterDashboard from "@/components/writer-dashboard"
 
 export default function WriterDashboardPage() {
   return <WriterDashboard />
