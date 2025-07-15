@@ -1,57 +1,57 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, Bell, CheckCircle, AlertCircle, Clock, Trash2, BookMarkedIcon as MarkAsRead } from "lucide-react"
+import { Bell, ArrowLeft, Info, Calendar, User, MessageSquare, Clock } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function StudentNotifications() {
   const [notifications, setNotifications] = useState([
     {
       id: 1,
-      type: "exam_reminder",
-      title: "Exam Reminder: Mathematics",
-      message: "Your mathematics exam is scheduled for tomorrow at 10:00 AM with Sarah Johnson.",
-      timestamp: "2024-01-19T14:30:00Z",
+      type: "exam",
+      title: "Exam Confirmed",
+      message: "Your Advanced Mathematics exam has been confirmed for January 20, 2024 at 10:00 AM with Sarah Johnson.",
+      time: "2 hours ago",
       read: false,
       priority: "high",
     },
     {
       id: 2,
-      type: "writer_assigned",
-      title: "Writer Assigned",
-      message: "Michael Brown has been assigned as your writer for the History exam on January 22.",
-      timestamp: "2024-01-18T09:15:00Z",
+      type: "writer",
+      title: "New Writer Match",
+      message: "Michael Chen has been matched as your writer for Literature Analysis. Review his profile and confirm.",
+      time: "5 hours ago",
       read: false,
       priority: "medium",
     },
     {
       id: 3,
-      type: "exam_completed",
-      title: "Exam Results Available",
-      message: "Your English Literature exam results are now available. Grade: A-",
-      timestamp: "2024-01-16T16:45:00Z",
+      type: "system",
+      title: "Profile Update Required",
+      message: "Please update your accommodation preferences in your profile settings.",
+      time: "1 day ago",
       read: true,
       priority: "low",
     },
     {
       id: 4,
-      type: "system",
-      title: "Profile Update Required",
-      message: "Please update your accessibility preferences in your profile settings.",
-      timestamp: "2024-01-15T11:20:00Z",
+      type: "message",
+      title: "Message from Sarah Johnson",
+      message: "Hi John, I've prepared the materials for tomorrow's exam. Looking forward to working with you!",
+      time: "2 days ago",
       read: true,
       priority: "medium",
     },
     {
       id: 5,
-      type: "exam_cancelled",
-      title: "Exam Session Cancelled",
-      message: "Your Science exam scheduled for January 18 has been cancelled. Please reschedule.",
-      timestamp: "2024-01-14T08:30:00Z",
+      type: "exam",
+      title: "Exam Reminder",
+      message: "Don't forget about your Physics exam tomorrow at 2:00 PM with Emily Davis.",
+      time: "3 days ago",
       read: true,
       priority: "high",
     },
@@ -59,308 +59,281 @@ export default function StudentNotifications() {
 
   const router = useRouter()
 
-  const unreadCount = notifications.filter((n) => !n.read).length
+  const handleBack = () => {
+    router.push("/student/dashboard")
+  }
 
   const markAsRead = (id) => {
-    setNotifications((prev) =>
-      prev.map((notification) => (notification.id === id ? { ...notification, read: true } : notification)),
-    )
+    setNotifications((prev) => prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif)))
   }
 
   const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })))
-  }
-
-  const deleteNotification = (id) => {
-    setNotifications((prev) => prev.filter((notification) => notification.id !== id))
-  }
-
-  const goBack = () => {
-    router.push("/student/dashboard")
+    setNotifications((prev) => prev.map((notif) => ({ ...notif, read: true })))
   }
 
   const getNotificationIcon = (type) => {
     switch (type) {
-      case "exam_reminder":
-        return <Clock className="h-5 w-5 text-blue-600" />
-      case "writer_assigned":
-        return <CheckCircle className="h-5 w-5 text-green-600" />
-      case "exam_completed":
-        return <CheckCircle className="h-5 w-5 text-green-600" />
-      case "exam_cancelled":
-        return <AlertCircle className="h-5 w-5 text-red-600" />
+      case "exam":
+        return <Calendar className="w-5 h-5 text-blue-600" />
+      case "writer":
+        return <User className="w-5 h-5 text-green-600" />
+      case "message":
+        return <MessageSquare className="w-5 h-5 text-purple-600" />
       case "system":
-        return <Bell className="h-5 w-5 text-orange-600" />
+        return <Info className="w-5 h-5 text-orange-600" />
       default:
-        return <Bell className="h-5 w-5 text-gray-600" />
+        return <Bell className="w-5 h-5 text-gray-600" />
     }
   }
 
   const getPriorityColor = (priority) => {
     switch (priority) {
       case "high":
-        return "destructive"
+        return "bg-red-100 text-red-800"
       case "medium":
-        return "default"
+        return "bg-yellow-100 text-yellow-800"
       case "low":
-        return "secondary"
+        return "bg-green-100 text-green-800"
       default:
-        return "secondary"
+        return "bg-gray-100 text-gray-800"
     }
   }
 
-  const formatTimestamp = (timestamp) => {
-    const date = new Date(timestamp)
-    const now = new Date()
-    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60))
-
-    if (diffInHours < 1) {
-      return "Just now"
-    } else if (diffInHours < 24) {
-      return `${diffInHours} hours ago`
-    } else {
-      const diffInDays = Math.floor(diffInHours / 24)
-      return `${diffInDays} days ago`
-    }
-  }
-
-  const filterNotifications = (filter) => {
-    switch (filter) {
-      case "unread":
-        return notifications.filter((n) => !n.read)
-      case "read":
-        return notifications.filter((n) => n.read)
-      case "high":
-        return notifications.filter((n) => n.priority === "high")
-      default:
-        return notifications
-    }
-  }
+  const unreadCount = notifications.filter((n) => !n.read).length
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" onClick={goBack} className="text-blue-600 hover:text-blue-700">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Button>
-
-          {unreadCount > 0 && (
-            <Button onClick={markAllAsRead} variant="outline">
-              <MarkAsRead className="h-4 w-4 mr-2" />
-              Mark All as Read
-            </Button>
-          )}
-        </div>
-
-        <Card className="shadow-lg">
-          <CardHeader>
-            <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" onClick={handleBack}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
+              </Button>
               <div>
-                <CardTitle className="flex items-center">
-                  <Bell className="h-6 w-6 mr-2 text-blue-600" />
-                  Notifications
-                </CardTitle>
-                <CardDescription>Stay updated with your exam schedule and important announcements</CardDescription>
+                <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
+                {unreadCount > 0 && <p className="text-sm text-gray-600">{unreadCount} unread notifications</p>}
               </div>
-              {unreadCount > 0 && (
-                <Badge variant="destructive" className="text-lg px-3 py-1">
-                  {unreadCount} unread
-                </Badge>
-              )}
             </div>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="all" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="all">All ({notifications.length})</TabsTrigger>
-                <TabsTrigger value="unread">Unread ({unreadCount})</TabsTrigger>
-                <TabsTrigger value="read">Read ({notifications.length - unreadCount})</TabsTrigger>
-                <TabsTrigger value="high">High Priority</TabsTrigger>
-              </TabsList>
+            {unreadCount > 0 && (
+              <Button onClick={markAllAsRead} variant="outline">
+                Mark All as Read
+              </Button>
+            )}
+          </div>
+        </div>
+      </header>
 
-              <TabsContent value="all" className="space-y-4">
-                {filterNotifications("all").map((notification) => (
-                  <div
-                    key={notification.id}
-                    className={`p-4 border rounded-lg transition-colors ${
-                      !notification.read ? "bg-blue-50 border-blue-200" : "bg-white"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3 flex-1">
-                        <div className="flex-shrink-0 mt-1">{getNotificationIcon(notification.type)}</div>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <h4 className={`font-medium ${!notification.read ? "font-semibold" : ""}`}>
-                              {notification.title}
-                            </h4>
-                            <Badge variant={getPriorityColor(notification.priority)} className="text-xs">
-                              {notification.priority}
-                            </Badge>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Tabs defaultValue="all" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="exam">Exams</TabsTrigger>
+            <TabsTrigger value="writer">Writers</TabsTrigger>
+            <TabsTrigger value="message">Messages</TabsTrigger>
+            <TabsTrigger value="system">System</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="all" className="space-y-4">
+            {notifications.map((notification) => (
+              <Card
+                key={notification.id}
+                className={`cursor-pointer transition-all hover:shadow-md ${
+                  !notification.read ? "border-blue-200 bg-blue-50/50" : ""
+                }`}
+                onClick={() => markAsRead(notification.id)}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0">{getNotificationIcon(notification.type)}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3
+                          className={`text-lg font-semibold ${!notification.read ? "text-gray-900" : "text-gray-700"}`}
+                        >
+                          {notification.title}
+                        </h3>
+                        <div className="flex items-center space-x-2">
+                          <Badge className={getPriorityColor(notification.priority)}>{notification.priority}</Badge>
+                          {!notification.read && <div className="w-2 h-2 bg-blue-600 rounded-full"></div>}
+                        </div>
+                      </div>
+                      <p className={`text-sm mb-2 ${!notification.read ? "text-gray-700" : "text-gray-600"}`}>
+                        {notification.message}
+                      </p>
+                      <div className="flex items-center text-xs text-gray-500">
+                        <Clock className="w-3 h-3 mr-1" />
+                        {notification.time}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+
+          <TabsContent value="exam" className="space-y-4">
+            {notifications
+              .filter((n) => n.type === "exam")
+              .map((notification) => (
+                <Card
+                  key={notification.id}
+                  className={`cursor-pointer transition-all hover:shadow-md ${
+                    !notification.read ? "border-blue-200 bg-blue-50/50" : ""
+                  }`}
+                  onClick={() => markAsRead(notification.id)}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0">{getNotificationIcon(notification.type)}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3
+                            className={`text-lg font-semibold ${!notification.read ? "text-gray-900" : "text-gray-700"}`}
+                          >
+                            {notification.title}
+                          </h3>
+                          <div className="flex items-center space-x-2">
+                            <Badge className={getPriorityColor(notification.priority)}>{notification.priority}</Badge>
                             {!notification.read && <div className="w-2 h-2 bg-blue-600 rounded-full"></div>}
                           </div>
-                          <p className="text-gray-600 mb-2">{notification.message}</p>
-                          <p className="text-sm text-gray-500">{formatTimestamp(notification.timestamp)}</p>
+                        </div>
+                        <p className={`text-sm mb-2 ${!notification.read ? "text-gray-700" : "text-gray-600"}`}>
+                          {notification.message}
+                        </p>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {notification.time}
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2 ml-4">
-                        {!notification.read && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => markAsRead(notification.id)}
-                            className="text-blue-600 hover:text-blue-700"
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+          </TabsContent>
+
+          <TabsContent value="writer" className="space-y-4">
+            {notifications
+              .filter((n) => n.type === "writer")
+              .map((notification) => (
+                <Card
+                  key={notification.id}
+                  className={`cursor-pointer transition-all hover:shadow-md ${
+                    !notification.read ? "border-blue-200 bg-blue-50/50" : ""
+                  }`}
+                  onClick={() => markAsRead(notification.id)}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0">{getNotificationIcon(notification.type)}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3
+                            className={`text-lg font-semibold ${!notification.read ? "text-gray-900" : "text-gray-700"}`}
                           >
-                            <CheckCircle className="h-4 w-4" />
-                          </Button>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteNotification(notification.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </TabsContent>
-
-              <TabsContent value="unread" className="space-y-4">
-                {filterNotifications("unread").map((notification) => (
-                  <div key={notification.id} className="p-4 border rounded-lg bg-blue-50 border-blue-200">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3 flex-1">
-                        <div className="flex-shrink-0 mt-1">{getNotificationIcon(notification.type)}</div>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <h4 className="font-semibold">{notification.title}</h4>
-                            <Badge variant={getPriorityColor(notification.priority)} className="text-xs">
-                              {notification.priority}
-                            </Badge>
-                            <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                            {notification.title}
+                          </h3>
+                          <div className="flex items-center space-x-2">
+                            <Badge className={getPriorityColor(notification.priority)}>{notification.priority}</Badge>
+                            {!notification.read && <div className="w-2 h-2 bg-blue-600 rounded-full"></div>}
                           </div>
-                          <p className="text-gray-600 mb-2">{notification.message}</p>
-                          <p className="text-sm text-gray-500">{formatTimestamp(notification.timestamp)}</p>
+                        </div>
+                        <p className={`text-sm mb-2 ${!notification.read ? "text-gray-700" : "text-gray-600"}`}>
+                          {notification.message}
+                        </p>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {notification.time}
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2 ml-4">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => markAsRead(notification.id)}
-                          className="text-blue-600 hover:text-blue-700"
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteNotification(notification.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
                     </div>
-                  </div>
-                ))}
-                {filterNotifications("unread").length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-600" />
-                    <p>All caught up! No unread notifications.</p>
-                  </div>
-                )}
-              </TabsContent>
+                  </CardContent>
+                </Card>
+              ))}
+          </TabsContent>
 
-              <TabsContent value="read" className="space-y-4">
-                {filterNotifications("read").map((notification) => (
-                  <div key={notification.id} className="p-4 border rounded-lg bg-white">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3 flex-1">
-                        <div className="flex-shrink-0 mt-1">{getNotificationIcon(notification.type)}</div>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <h4 className="font-medium">{notification.title}</h4>
-                            <Badge variant={getPriorityColor(notification.priority)} className="text-xs">
-                              {notification.priority}
-                            </Badge>
-                          </div>
-                          <p className="text-gray-600 mb-2">{notification.message}</p>
-                          <p className="text-sm text-gray-500">{formatTimestamp(notification.timestamp)}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2 ml-4">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteNotification(notification.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </TabsContent>
-
-              <TabsContent value="high" className="space-y-4">
-                {filterNotifications("high").map((notification) => (
-                  <div
-                    key={notification.id}
-                    className={`p-4 border rounded-lg transition-colors ${
-                      !notification.read ? "bg-red-50 border-red-200" : "bg-white border-red-200"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3 flex-1">
-                        <div className="flex-shrink-0 mt-1">{getNotificationIcon(notification.type)}</div>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <h4 className={`font-medium ${!notification.read ? "font-semibold" : ""}`}>
-                              {notification.title}
-                            </h4>
-                            <Badge variant="destructive" className="text-xs">
-                              HIGH PRIORITY
-                            </Badge>
-                            {!notification.read && <div className="w-2 h-2 bg-red-600 rounded-full"></div>}
-                          </div>
-                          <p className="text-gray-600 mb-2">{notification.message}</p>
-                          <p className="text-sm text-gray-500">{formatTimestamp(notification.timestamp)}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2 ml-4">
-                        {!notification.read && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => markAsRead(notification.id)}
-                            className="text-blue-600 hover:text-blue-700"
+          <TabsContent value="message" className="space-y-4">
+            {notifications
+              .filter((n) => n.type === "message")
+              .map((notification) => (
+                <Card
+                  key={notification.id}
+                  className={`cursor-pointer transition-all hover:shadow-md ${
+                    !notification.read ? "border-blue-200 bg-blue-50/50" : ""
+                  }`}
+                  onClick={() => markAsRead(notification.id)}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0">{getNotificationIcon(notification.type)}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3
+                            className={`text-lg font-semibold ${!notification.read ? "text-gray-900" : "text-gray-700"}`}
                           >
-                            <CheckCircle className="h-4 w-4" />
-                          </Button>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteNotification(notification.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                            {notification.title}
+                          </h3>
+                          <div className="flex items-center space-x-2">
+                            <Badge className={getPriorityColor(notification.priority)}>{notification.priority}</Badge>
+                            {!notification.read && <div className="w-2 h-2 bg-blue-600 rounded-full"></div>}
+                          </div>
+                        </div>
+                        <p className={`text-sm mb-2 ${!notification.read ? "text-gray-700" : "text-gray-600"}`}>
+                          {notification.message}
+                        </p>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {notification.time}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+                  </CardContent>
+                </Card>
+              ))}
+          </TabsContent>
+
+          <TabsContent value="system" className="space-y-4">
+            {notifications
+              .filter((n) => n.type === "system")
+              .map((notification) => (
+                <Card
+                  key={notification.id}
+                  className={`cursor-pointer transition-all hover:shadow-md ${
+                    !notification.read ? "border-blue-200 bg-blue-50/50" : ""
+                  }`}
+                  onClick={() => markAsRead(notification.id)}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0">{getNotificationIcon(notification.type)}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3
+                            className={`text-lg font-semibold ${!notification.read ? "text-gray-900" : "text-gray-700"}`}
+                          >
+                            {notification.title}
+                          </h3>
+                          <div className="flex items-center space-x-2">
+                            <Badge className={getPriorityColor(notification.priority)}>{notification.priority}</Badge>
+                            {!notification.read && <div className="w-2 h-2 bg-blue-600 rounded-full"></div>}
+                          </div>
+                        </div>
+                        <p className={`text-sm mb-2 ${!notification.read ? "text-gray-700" : "text-gray-600"}`}>
+                          {notification.message}
+                        </p>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {notification.time}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )

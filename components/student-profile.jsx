@@ -1,349 +1,366 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, Camera, Save } from "lucide-react"
+import { User, ArrowLeft, Camera, Save, BookOpen, GraduationCap, Phone, Mail, MapPin, Shield } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function StudentProfile() {
+  const [isEditing, setIsEditing] = useState(false)
   const [profileData, setProfileData] = useState({
     firstName: "John",
-    lastName: "Smith",
-    email: "john.smith@email.com",
+    lastName: "Doe",
+    email: "john.doe@university.edu",
     phone: "+1 (555) 123-4567",
-    institution: "University of Technology",
-    studentId: "ST123456",
-    disability: "blind",
-    accommodations: "Need extra time for exams, prefer audio instructions",
-    emergencyContact: "Jane Smith",
+    institution: "Tech University",
+    studentId: "TU2021001",
+    yearOfStudy: "3",
+    fieldOfStudy: "Computer Science",
+    visualImpairment: "legally-blind",
+    assistiveTechnology: "JAWS Screen Reader, Braille Display",
+    accommodationNeeds: "Extended time for exams, large print materials when possible",
+    emergencyContact: "Jane Doe",
     emergencyPhone: "+1 (555) 987-6543",
-  })
-
-  const [preferences, setPreferences] = useState({
-    emailNotifications: true,
-    smsNotifications: false,
-    reminderTime: "24",
-    preferredWriterGender: "no-preference",
-    fontSize: "large",
-    highContrast: true,
-    screenReader: true,
+    bio: "Passionate computer science student interested in accessibility technology and web development.",
   })
 
   const router = useRouter()
 
-  const handleProfileChange = (field, value) => {
+  const handleBack = () => {
+    router.push("/student/dashboard")
+  }
+
+  const handleInputChange = (field, value) => {
     setProfileData((prev) => ({
       ...prev,
       [field]: value,
     }))
   }
 
-  const handlePreferenceChange = (field, value) => {
-    setPreferences((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-  }
-
   const handleSave = () => {
-    // Save profile data
-    alert("Profile updated successfully!")
-  }
-
-  const goBack = () => {
-    router.push("/student/dashboard")
+    // Simulate save
+    setIsEditing(false)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        <Button variant="ghost" onClick={goBack} className="mb-4 text-blue-600 hover:text-blue-700">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Dashboard
-        </Button>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Profile Picture Section */}
-          <Card className="lg:col-span-1">
-            <CardHeader className="text-center">
-              <CardTitle>Profile Picture</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center space-y-4">
-              <Avatar className="h-32 w-32 mx-auto">
-                <AvatarImage src="/placeholder-user.jpg" alt="Profile" />
-                <AvatarFallback className="text-2xl">JS</AvatarFallback>
-              </Avatar>
-              <Button variant="outline" className="w-full bg-transparent">
-                <Camera className="h-4 w-4 mr-2" />
-                Change Photo
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" onClick={handleBack}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
               </Button>
-              <div className="text-center">
-                <h3 className="text-xl font-semibold">
-                  {profileData.firstName} {profileData.lastName}
-                </h3>
-                <p className="text-gray-600">Student</p>
-                <p className="text-sm text-gray-500">{profileData.institution}</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              {isEditing ? (
+                <>
+                  <Button variant="outline" onClick={() => setIsEditing(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSave}>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Changes
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Tabs defaultValue="personal" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="personal">Personal Info</TabsTrigger>
+            <TabsTrigger value="academic">Academic</TabsTrigger>
+            <TabsTrigger value="accessibility">Accessibility</TabsTrigger>
+            <TabsTrigger value="emergency">Emergency</TabsTrigger>
+          </TabsList>
+
+          {/* Profile Header */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-6">
+                <div className="relative">
+                  <Avatar className="w-24 h-24">
+                    <AvatarImage src="/placeholder-user.jpg" />
+                    <AvatarFallback className="bg-blue-500 text-white text-2xl">
+                      {profileData.firstName[0]}
+                      {profileData.lastName[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  {isEditing && (
+                    <Button size="sm" className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0">
+                      <Camera className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {profileData.firstName} {profileData.lastName}
+                  </h1>
+                  <p className="text-gray-600">{profileData.fieldOfStudy} Student</p>
+                  <p className="text-gray-500">{profileData.institution}</p>
+                  <div className="flex items-center space-x-4 mt-2">
+                    <Badge className="bg-blue-100 text-blue-800">
+                      <Shield className="w-3 h-3 mr-1" />
+                      Verified Student
+                    </Badge>
+                    <Badge variant="outline">Year {profileData.yearOfStudy}</Badge>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Profile Information */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
-              <CardDescription>Update your personal information and preferences</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="personal" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="personal">Personal Info</TabsTrigger>
-                  <TabsTrigger value="accessibility">Accessibility</TabsTrigger>
-                  <TabsTrigger value="preferences">Preferences</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="personal" className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName">First Name</Label>
-                      <Input
-                        id="firstName"
-                        value={profileData.firstName}
-                        onChange={(e) => handleProfileChange("firstName", e.target.value)}
-                        className="text-lg p-3"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName">Last Name</Label>
-                      <Input
-                        id="lastName"
-                        value={profileData.lastName}
-                        onChange={(e) => handleProfileChange("lastName", e.target.value)}
-                        className="text-lg p-3"
-                      />
-                    </div>
-                  </div>
-
+          <TabsContent value="personal" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <User className="w-5 h-5" />
+                  <span>Personal Information</span>
+                </CardTitle>
+                <CardDescription>Your basic personal details and contact information</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label htmlFor="firstName">First Name</Label>
                     <Input
-                      id="email"
-                      type="email"
-                      value={profileData.email}
-                      onChange={(e) => handleProfileChange("email", e.target.value)}
+                      id="firstName"
+                      value={profileData.firstName}
+                      onChange={(e) => handleInputChange("firstName", e.target.value)}
+                      disabled={!isEditing}
                       className="text-lg p-3"
                     />
                   </div>
-
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="lastName">Last Name</Label>
                     <Input
-                      id="phone"
-                      type="tel"
-                      value={profileData.phone}
-                      onChange={(e) => handleProfileChange("phone", e.target.value)}
+                      id="lastName"
+                      value={profileData.lastName}
+                      onChange={(e) => handleInputChange("lastName", e.target.value)}
+                      disabled={!isEditing}
                       className="text-lg p-3"
                     />
                   </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="flex items-center space-x-2">
+                    <Mail className="w-4 h-4" />
+                    <span>Email Address</span>
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={profileData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    disabled={!isEditing}
+                    className="text-lg p-3"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="flex items-center space-x-2">
+                    <Phone className="w-4 h-4" />
+                    <span>Phone Number</span>
+                  </Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={profileData.phone}
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
+                    disabled={!isEditing}
+                    className="text-lg p-3"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bio">Bio</Label>
+                  <Textarea
+                    id="bio"
+                    value={profileData.bio}
+                    onChange={(e) => handleInputChange("bio", e.target.value)}
+                    disabled={!isEditing}
+                    className="text-lg p-3"
+                    rows={3}
+                    placeholder="Tell us about yourself..."
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="institution">Institution</Label>
-                      <Input
-                        id="institution"
-                        value={profileData.institution}
-                        onChange={(e) => handleProfileChange("institution", e.target.value)}
-                        className="text-lg p-3"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="studentId">Student ID</Label>
-                      <Input
-                        id="studentId"
-                        value={profileData.studentId}
-                        onChange={(e) => handleProfileChange("studentId", e.target.value)}
-                        className="text-lg p-3"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="emergencyContact">Emergency Contact</Label>
-                      <Input
-                        id="emergencyContact"
-                        value={profileData.emergencyContact}
-                        onChange={(e) => handleProfileChange("emergencyContact", e.target.value)}
-                        className="text-lg p-3"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="emergencyPhone">Emergency Phone</Label>
-                      <Input
-                        id="emergencyPhone"
-                        type="tel"
-                        value={profileData.emergencyPhone}
-                        onChange={(e) => handleProfileChange("emergencyPhone", e.target.value)}
-                        className="text-lg p-3"
-                      />
-                    </div>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="accessibility" className="space-y-4">
+          <TabsContent value="academic" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <GraduationCap className="w-5 h-5" />
+                  <span>Academic Information</span>
+                </CardTitle>
+                <CardDescription>Your educational background and academic details</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="institution" className="flex items-center space-x-2">
+                    <MapPin className="w-4 h-4" />
+                    <span>Institution</span>
+                  </Label>
+                  <Input
+                    id="institution"
+                    value={profileData.institution}
+                    onChange={(e) => handleInputChange("institution", e.target.value)}
+                    disabled={!isEditing}
+                    className="text-lg p-3"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="disability">Type of Visual Impairment</Label>
-                    <Select
-                      value={profileData.disability}
-                      onValueChange={(value) => handleProfileChange("disability", value)}
-                    >
+                    <Label htmlFor="studentId">Student ID</Label>
+                    <Input
+                      id="studentId"
+                      value={profileData.studentId}
+                      onChange={(e) => handleInputChange("studentId", e.target.value)}
+                      disabled={!isEditing}
+                      className="text-lg p-3"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="yearOfStudy">Year of Study</Label>
+                    {isEditing ? (
+                      <Select onValueChange={(value) => handleInputChange("yearOfStudy", value)}>
+                        <SelectTrigger className="text-lg p-3">
+                          <SelectValue placeholder={`Year ${profileData.yearOfStudy}`} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1st Year</SelectItem>
+                          <SelectItem value="2">2nd Year</SelectItem>
+                          <SelectItem value="3">3rd Year</SelectItem>
+                          <SelectItem value="4">4th Year</SelectItem>
+                          <SelectItem value="graduate">Graduate</SelectItem>
+                          <SelectItem value="postgraduate">Postgraduate</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Input value={`Year ${profileData.yearOfStudy}`} disabled className="text-lg p-3" />
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fieldOfStudy" className="flex items-center space-x-2">
+                    <BookOpen className="w-4 h-4" />
+                    <span>Field of Study</span>
+                  </Label>
+                  <Input
+                    id="fieldOfStudy"
+                    value={profileData.fieldOfStudy}
+                    onChange={(e) => handleInputChange("fieldOfStudy", e.target.value)}
+                    disabled={!isEditing}
+                    className="text-lg p-3"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="accessibility" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Accessibility Information</CardTitle>
+                <CardDescription>Details about your visual impairment and accommodation needs</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="visualImpairment">Type of Visual Impairment</Label>
+                  {isEditing ? (
+                    <Select onValueChange={(value) => handleInputChange("visualImpairment", value)}>
                       <SelectTrigger className="text-lg p-3">
-                        <SelectValue />
+                        <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="blind">Blind</SelectItem>
                         <SelectItem value="low-vision">Low Vision</SelectItem>
-                        <SelectItem value="color-blind">Color Blind</SelectItem>
+                        <SelectItem value="legally-blind">Legally Blind</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="accommodations">Required Accommodations</Label>
-                    <Textarea
-                      id="accommodations"
-                      value={profileData.accommodations}
-                      onChange={(e) => handleProfileChange("accommodations", e.target.value)}
-                      className="text-lg p-3 min-h-[120px]"
+                  ) : (
+                    <Input
+                      value={profileData.visualImpairment.replace("-", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                      disabled
+                      className="text-lg p-3"
                     />
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label htmlFor="highContrast">High Contrast Mode</Label>
-                        <p className="text-sm text-gray-600">Enable high contrast display</p>
-                      </div>
-                      <Switch
-                        id="highContrast"
-                        checked={preferences.highContrast}
-                        onCheckedChange={(checked) => handlePreferenceChange("highContrast", checked)}
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label htmlFor="screenReader">Screen Reader Support</Label>
-                        <p className="text-sm text-gray-600">Optimize for screen readers</p>
-                      </div>
-                      <Switch
-                        id="screenReader"
-                        checked={preferences.screenReader}
-                        onCheckedChange={(checked) => handlePreferenceChange("screenReader", checked)}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="fontSize">Font Size</Label>
-                      <Select
-                        value={preferences.fontSize}
-                        onValueChange={(value) => handlePreferenceChange("fontSize", value)}
-                      >
-                        <SelectTrigger className="text-lg p-3">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="small">Small</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="large">Large</SelectItem>
-                          <SelectItem value="extra-large">Extra Large</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="preferences" className="space-y-4">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label htmlFor="emailNotifications">Email Notifications</Label>
-                        <p className="text-sm text-gray-600">Receive exam reminders via email</p>
-                      </div>
-                      <Switch
-                        id="emailNotifications"
-                        checked={preferences.emailNotifications}
-                        onCheckedChange={(checked) => handlePreferenceChange("emailNotifications", checked)}
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label htmlFor="smsNotifications">SMS Notifications</Label>
-                        <p className="text-sm text-gray-600">Receive exam reminders via text</p>
-                      </div>
-                      <Switch
-                        id="smsNotifications"
-                        checked={preferences.smsNotifications}
-                        onCheckedChange={(checked) => handlePreferenceChange("smsNotifications", checked)}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="reminderTime">Reminder Time</Label>
-                      <Select
-                        value={preferences.reminderTime}
-                        onValueChange={(value) => handlePreferenceChange("reminderTime", value)}
-                      >
-                        <SelectTrigger className="text-lg p-3">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">1 hour before</SelectItem>
-                          <SelectItem value="6">6 hours before</SelectItem>
-                          <SelectItem value="24">24 hours before</SelectItem>
-                          <SelectItem value="48">48 hours before</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="preferredWriterGender">Preferred Writer Gender</Label>
-                      <Select
-                        value={preferences.preferredWriterGender}
-                        onValueChange={(value) => handlePreferenceChange("preferredWriterGender", value)}
-                      >
-                        <SelectTrigger className="text-lg p-3">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="no-preference">No Preference</SelectItem>
-                          <SelectItem value="male">Male</SelectItem>
-                          <SelectItem value="female">Female</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </TabsContent>
-
-                <div className="flex justify-end pt-6">
-                  <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Changes
-                  </Button>
+                  )}
                 </div>
-              </Tabs>
-            </CardContent>
-          </Card>
-        </div>
+                <div className="space-y-2">
+                  <Label htmlFor="assistiveTechnology">Assistive Technology Used</Label>
+                  <Textarea
+                    id="assistiveTechnology"
+                    value={profileData.assistiveTechnology}
+                    onChange={(e) => handleInputChange("assistiveTechnology", e.target.value)}
+                    disabled={!isEditing}
+                    className="text-lg p-3"
+                    rows={3}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="accommodationNeeds">Specific Accommodation Needs</Label>
+                  <Textarea
+                    id="accommodationNeeds"
+                    value={profileData.accommodationNeeds}
+                    onChange={(e) => handleInputChange("accommodationNeeds", e.target.value)}
+                    disabled={!isEditing}
+                    className="text-lg p-3"
+                    rows={3}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="emergency" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Emergency Contact</CardTitle>
+                <CardDescription>Emergency contact information for urgent situations</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="emergencyContact">Emergency Contact Name</Label>
+                  <Input
+                    id="emergencyContact"
+                    value={profileData.emergencyContact}
+                    onChange={(e) => handleInputChange("emergencyContact", e.target.value)}
+                    disabled={!isEditing}
+                    className="text-lg p-3"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="emergencyPhone">Emergency Contact Phone</Label>
+                  <Input
+                    id="emergencyPhone"
+                    type="tel"
+                    value={profileData.emergencyPhone}
+                    onChange={(e) => handleInputChange("emergencyPhone", e.target.value)}
+                    disabled={!isEditing}
+                    className="text-lg p-3"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )

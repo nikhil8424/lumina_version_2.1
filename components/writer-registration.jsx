@@ -1,18 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ArrowLeft, Eye, EyeOff } from "lucide-react"
+import { Eye, ArrowLeft } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function WriterRegistration() {
-  const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -20,15 +19,16 @@ export default function WriterRegistration() {
     password: "",
     confirmPassword: "",
     phone: "",
+    education: "",
     experience: "",
-    qualifications: "",
-    subjects: [],
+    subjects: "",
     availability: "",
     motivation: "",
     references: "",
-    agreeTerms: false,
     backgroundCheck: false,
+    agreeToTerms: false,
   })
+
   const router = useRouter()
 
   const handleInputChange = (field, value) => {
@@ -38,243 +38,200 @@ export default function WriterRegistration() {
     }))
   }
 
-  const handleSubjectChange = (subject, checked) => {
-    setFormData((prev) => ({
-      ...prev,
-      subjects: checked ? [...prev.subjects, subject] : prev.subjects.filter((s) => s !== subject),
-    }))
-  }
-
   const handleSubmit = (e) => {
     e.preventDefault()
-
-    // Basic validation
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
-      alert("Please fill in all required fields")
-      return
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match")
-      return
-    }
-
-    if (!formData.agreeTerms || !formData.backgroundCheck) {
-      alert("Please agree to all terms and conditions")
-      return
-    }
-
-    // Registration successful - redirect to dashboard
+    // Simulate registration
     router.push("/writer/dashboard")
   }
 
-  const goBack = () => {
+  const handleBack = () => {
     router.push("/login")
   }
 
-  const subjects = [
-    "Mathematics",
-    "Science",
-    "English",
-    "History",
-    "Geography",
-    "Computer Science",
-    "Psychology",
-    "Sociology",
-    "Economics",
-    "Other",
-  ]
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-4">
       <div className="max-w-2xl mx-auto">
-        <Button variant="ghost" onClick={goBack} className="mb-4 text-green-600 hover:text-green-700">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Login
-        </Button>
+        <div className="mb-6">
+          <Button variant="ghost" onClick={handleBack} className="text-gray-600 hover:text-gray-800">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Login
+          </Button>
+        </div>
 
-        <Card className="shadow-lg">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold text-green-900">Writer Registration</CardTitle>
-            <CardDescription>Join LUMINA as a volunteer writer</CardDescription>
+        <Card className="shadow-2xl bg-white/90 backdrop-blur-sm">
+          <CardHeader className="text-center space-y-4">
+            <div className="flex justify-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                <Eye className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl font-bold text-gray-800">Writer Registration</CardTitle>
+            <CardDescription>Join LUMINA as a volunteer writer to help students succeed</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name *</Label>
-                  <Input
-                    id="firstName"
-                    value={formData.firstName}
-                    onChange={(e) => handleInputChange("firstName", e.target.value)}
-                    className="text-lg p-3"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name *</Label>
-                  <Input
-                    id="lastName"
-                    value={formData.lastName}
-                    onChange={(e) => handleInputChange("lastName", e.target.value)}
-                    className="text-lg p-3"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  className="text-lg p-3"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password *</Label>
-                  <div className="relative">
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800">Personal Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name *</Label>
                     <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={formData.password}
-                      onChange={(e) => handleInputChange("password", e.target.value)}
-                      className="text-lg p-3 pr-10"
+                      id="firstName"
+                      value={formData.firstName}
+                      onChange={(e) => handleInputChange("firstName", e.target.value)}
                       required
+                      className="text-lg p-3"
                     />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name *</Label>
+                    <Input
+                      id="lastName"
+                      value={formData.lastName}
+                      onChange={(e) => handleInputChange("lastName", e.target.value)}
+                      required
+                      className="text-lg p-3"
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                  <Label htmlFor="email">Email Address *</Label>
                   <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                    className="text-lg p-3"
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     required
+                    className="text-lg p-3"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password *</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => handleInputChange("password", e.target.value)}
+                      required
+                      className="text-lg p-3"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={formData.confirmPassword}
+                      onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                      required
+                      className="text-lg p-3"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
+                    className="text-lg p-3"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
-                  className="text-lg p-3"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="experience">Writing Experience</Label>
-                <Select onValueChange={(value) => handleInputChange("experience", value)}>
-                  <SelectTrigger className="text-lg p-3">
-                    <SelectValue placeholder="Select your experience level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="beginner">Beginner (0-1 years)</SelectItem>
-                    <SelectItem value="intermediate">Intermediate (2-5 years)</SelectItem>
-                    <SelectItem value="experienced">Experienced (5+ years)</SelectItem>
-                    <SelectItem value="professional">Professional Writer</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="qualifications">Educational Qualifications</Label>
-                <Textarea
-                  id="qualifications"
-                  value={formData.qualifications}
-                  onChange={(e) => handleInputChange("qualifications", e.target.value)}
-                  placeholder="List your degrees, certifications, and relevant qualifications..."
-                  className="text-lg p-3 min-h-[100px]"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Subject Areas (Select all that apply)</Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {subjects.map((subject) => (
-                    <div key={subject} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={subject}
-                        checked={formData.subjects.includes(subject)}
-                        onCheckedChange={(checked) => handleSubjectChange(subject, checked)}
-                      />
-                      <Label htmlFor={subject} className="text-sm">
-                        {subject}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="availability">Availability</Label>
-                <Select onValueChange={(value) => handleInputChange("availability", value)}>
-                  <SelectTrigger className="text-lg p-3">
-                    <SelectValue placeholder="Select your availability" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="weekdays">Weekdays only</SelectItem>
-                    <SelectItem value="weekends">Weekends only</SelectItem>
-                    <SelectItem value="flexible">Flexible schedule</SelectItem>
-                    <SelectItem value="limited">Limited availability</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="motivation">Why do you want to volunteer?</Label>
-                <Textarea
-                  id="motivation"
-                  value={formData.motivation}
-                  onChange={(e) => handleInputChange("motivation", e.target.value)}
-                  placeholder="Tell us about your motivation to help visually impaired students..."
-                  className="text-lg p-3 min-h-[100px]"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="references">References (Optional)</Label>
-                <Textarea
-                  id="references"
-                  value={formData.references}
-                  onChange={(e) => handleInputChange("references", e.target.value)}
-                  placeholder="Provide contact information for professional or academic references..."
-                  className="text-lg p-3 min-h-[80px]"
-                />
-              </div>
-
+              {/* Qualifications */}
               <div className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="agreeTerms"
-                    checked={formData.agreeTerms}
-                    onCheckedChange={(checked) => handleInputChange("agreeTerms", checked)}
+                <h3 className="text-lg font-semibold text-gray-800">Qualifications</h3>
+                <div className="space-y-2">
+                  <Label htmlFor="education">Educational Background *</Label>
+                  <Textarea
+                    id="education"
+                    value={formData.education}
+                    onChange={(e) => handleInputChange("education", e.target.value)}
+                    required
+                    className="text-lg p-3"
+                    placeholder="Describe your educational qualifications"
+                    rows={3}
                   />
-                  <Label htmlFor="agreeTerms" className="text-sm">
-                    I agree to the Terms and Conditions and Privacy Policy *
-                  </Label>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="experience">Relevant Experience</Label>
+                  <Textarea
+                    id="experience"
+                    value={formData.experience}
+                    onChange={(e) => handleInputChange("experience", e.target.value)}
+                    className="text-lg p-3"
+                    placeholder="Any experience with accessibility, tutoring, or working with visually impaired individuals"
+                    rows={3}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="subjects">Subject Areas of Expertise *</Label>
+                  <Textarea
+                    id="subjects"
+                    value={formData.subjects}
+                    onChange={(e) => handleInputChange("subjects", e.target.value)}
+                    required
+                    className="text-lg p-3"
+                    placeholder="List subjects you're comfortable helping with (e.g., Mathematics, Literature, Science)"
+                    rows={3}
+                  />
+                </div>
+              </div>
 
+              {/* Availability */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800">Availability</h3>
+                <div className="space-y-2">
+                  <Label htmlFor="availability">Available Hours *</Label>
+                  <Select onValueChange={(value) => handleInputChange("availability", value)}>
+                    <SelectTrigger className="text-lg p-3">
+                      <SelectValue placeholder="Select availability" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1-5">1-5 hours per week</SelectItem>
+                      <SelectItem value="5-10">5-10 hours per week</SelectItem>
+                      <SelectItem value="10-15">10-15 hours per week</SelectItem>
+                      <SelectItem value="15+">15+ hours per week</SelectItem>
+                      <SelectItem value="flexible">Flexible</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Motivation */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800">Additional Information</h3>
+                <div className="space-y-2">
+                  <Label htmlFor="motivation">Why do you want to volunteer? *</Label>
+                  <Textarea
+                    id="motivation"
+                    value={formData.motivation}
+                    onChange={(e) => handleInputChange("motivation", e.target.value)}
+                    required
+                    className="text-lg p-3"
+                    placeholder="Tell us about your motivation to help visually impaired students"
+                    rows={4}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="references">References (Optional)</Label>
+                  <Textarea
+                    id="references"
+                    value={formData.references}
+                    onChange={(e) => handleInputChange("references", e.target.value)}
+                    className="text-lg p-3"
+                    placeholder="Contact information for professional or academic references"
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              {/* Agreements */}
+              <div className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="backgroundCheck"
@@ -282,13 +239,27 @@ export default function WriterRegistration() {
                     onCheckedChange={(checked) => handleInputChange("backgroundCheck", checked)}
                   />
                   <Label htmlFor="backgroundCheck" className="text-sm">
-                    I consent to a background check as required for volunteer work *
+                    I consent to a background check if required *
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="terms"
+                    checked={formData.agreeToTerms}
+                    onCheckedChange={(checked) => handleInputChange("agreeToTerms", checked)}
+                  />
+                  <Label htmlFor="terms" className="text-sm">
+                    I agree to the Terms of Service and Privacy Policy *
                   </Label>
                 </div>
               </div>
 
-              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-lg p-3">
-                Submit Writer Application
+              <Button
+                type="submit"
+                className="w-full bg-green-600 hover:bg-green-700 text-lg py-3"
+                disabled={!formData.agreeToTerms || !formData.backgroundCheck}
+              >
+                Register as Writer
               </Button>
             </form>
           </CardContent>
