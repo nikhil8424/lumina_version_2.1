@@ -1,67 +1,106 @@
 "use client"
+
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Progress } from "@/components/ui/progress"
-import { BookOpen, Calendar, Clock, User, Bell, Settings, PlusCircle, CheckCircle, Star } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Calendar, Clock, User, BookOpen, Bell, Settings, LogOut, Plus, CheckCircle, Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
 
 export default function StudentDashboard() {
-  const [activeRequests, setActiveRequests] = useState([
+  const [activeTab, setActiveTab] = useState("overview")
+  const { theme, setTheme } = useTheme()
+  const router = useRouter()
+
+  const upcomingExams = [
     {
       id: 1,
       subject: "Mathematics",
-      type: "Exam Assistance",
+      date: "2024-01-20",
+      time: "10:00 AM",
       writer: "Sarah Johnson",
-      date: "2024-01-15",
-      time: "2:00 PM",
       status: "confirmed",
     },
     {
       id: 2,
       subject: "History",
-      type: "Assignment Help",
-      writer: "Michael Chen",
-      date: "2024-01-18",
-      time: "10:00 AM",
+      date: "2024-01-22",
+      time: "2:00 PM",
+      writer: "Michael Brown",
       status: "pending",
     },
-  ])
+  ]
 
-  const router = useRouter()
+  const recentExams = [
+    {
+      id: 1,
+      subject: "English Literature",
+      date: "2024-01-15",
+      writer: "Emily Davis",
+      status: "completed",
+      grade: "A-",
+    },
+    {
+      id: 2,
+      subject: "Science",
+      date: "2024-01-10",
+      writer: "John Smith",
+      status: "completed",
+      grade: "B+",
+    },
+  ]
 
-  const handleProfileClick = () => {
+  const handleLogout = () => {
+    router.push("/")
+  }
+
+  const navigateToProfile = () => {
     router.push("/student/profile")
   }
 
-  const handleNotificationsClick = () => {
+  const navigateToNotifications = () => {
     router.push("/student/notifications")
   }
 
+  const requestExam = () => {
+    // This would typically open a modal or navigate to a request form
+    alert("Exam request functionality would be implemented here")
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-green-500 rounded-full flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">Student Dashboard</h1>
-                <p className="text-gray-600">Welcome back, Alex!</p>
-              </div>
+              <h1 className="text-2xl font-bold text-blue-900">LUMINA</h1>
+              <Badge variant="secondary">Student</Badge>
             </div>
+
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" onClick={handleNotificationsClick} className="relative">
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+              <Button variant="ghost" size="sm" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
-              <Button variant="ghost" size="sm" onClick={handleProfileClick}>
-                <User className="w-5 h-5" />
+
+              <Button variant="ghost" size="sm" onClick={navigateToNotifications}>
+                <Bell className="h-4 w-4" />
+                <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 text-xs">
+                  3
+                </Badge>
+              </Button>
+
+              <Button variant="ghost" size="sm" onClick={navigateToProfile}>
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </Button>
+
+              <Button variant="ghost" size="sm" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
               </Button>
             </div>
           </div>
@@ -69,217 +108,230 @@ export default function StudentDashboard() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Active Requests</p>
-                  <p className="text-2xl font-bold text-blue-600">2</p>
-                </div>
-                <Clock className="w-8 h-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <div className="flex items-center space-x-4 mb-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src="/placeholder-user.jpg" alt="Student" />
+              <AvatarFallback>JS</AvatarFallback>
+            </Avatar>
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900">Welcome back, John!</h2>
+              <p className="text-gray-600">Ready for your next exam session?</p>
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Completed</p>
-                  <p className="text-2xl font-bold text-green-600">12</p>
-                </div>
-                <CheckCircle className="w-8 h-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">This Month</p>
-                  <p className="text-2xl font-bold text-purple-600">5</p>
-                </div>
-                <Calendar className="w-8 h-8 text-purple-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Rating</p>
-                  <p className="text-2xl font-bold text-yellow-600">4.8</p>
-                </div>
-                <Star className="w-8 h-8 text-yellow-500" />
-              </div>
-            </CardContent>
-          </Card>
+          <Button onClick={requestExam} className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="h-4 w-4 mr-2" />
+            Request New Exam Session
+          </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Active Requests */}
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-blue-500" />
-                    Active Requests
-                  </CardTitle>
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                    <PlusCircle className="w-4 h-4 mr-2" />
-                    New Request
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {activeRequests.map((request) => (
-                    <div key={request.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h4 className="font-semibold text-gray-800">{request.subject}</h4>
-                          <p className="text-sm text-gray-600">{request.type}</p>
-                        </div>
-                        <Badge
-                          variant={request.status === "confirmed" ? "default" : "secondary"}
-                          className={request.status === "confirmed" ? "bg-green-100 text-green-800" : ""}
-                        >
-                          {request.status}
-                        </Badge>
+        {/* Dashboard Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+            <TabsTrigger value="history">History</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Exams</CardTitle>
+                  <BookOpen className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">24</div>
+                  <p className="text-xs text-muted-foreground">+2 from last month</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Upcoming Sessions</CardTitle>
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{upcomingExams.length}</div>
+                  <p className="text-xs text-muted-foreground">Next: Tomorrow 10:00 AM</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Average Grade</CardTitle>
+                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">B+</div>
+                  <p className="text-xs text-muted-foreground">Improved from B</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Upcoming Exams</CardTitle>
+                  <CardDescription>Your scheduled exam sessions</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {upcomingExams.map((exam) => (
+                    <div key={exam.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <h4 className="font-medium">{exam.subject}</h4>
+                        <p className="text-sm text-gray-600">
+                          {exam.date} at {exam.time}
+                        </p>
+                        <p className="text-sm text-gray-500">Writer: {exam.writer}</p>
                       </div>
-                      <div className="flex items-center justify-between text-sm text-gray-600">
-                        <div className="flex items-center gap-4">
-                          <span>Writer: {request.writer}</span>
-                          <span>
-                            {request.date} at {request.time}
-                          </span>
-                        </div>
-                        <Button variant="outline" size="sm">
-                          View Details
-                        </Button>
+                      <Badge variant={exam.status === "confirmed" ? "default" : "secondary"}>{exam.status}</Badge>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Exams</CardTitle>
+                  <CardDescription>Your completed exam sessions</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {recentExams.map((exam) => (
+                    <div key={exam.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <h4 className="font-medium">{exam.subject}</h4>
+                        <p className="text-sm text-gray-600">{exam.date}</p>
+                        <p className="text-sm text-gray-500">Writer: {exam.writer}</p>
+                      </div>
+                      <div className="text-right">
+                        <Badge variant="outline" className="mb-1">
+                          {exam.status}
+                        </Badge>
+                        <p className="text-sm font-medium text-green-600">{exam.grade}</p>
                       </div>
                     </div>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
-            {/* Recent Activity */}
+          <TabsContent value="upcoming" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
+                <CardTitle>Upcoming Exam Sessions</CardTitle>
+                <CardDescription>Manage your scheduled exams</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                    <div>
-                      <p className="text-sm font-medium">Exam completed successfully</p>
-                      <p className="text-xs text-gray-500">Mathematics - 2 hours ago</p>
+              <CardContent className="space-y-4">
+                {upcomingExams.map((exam) => (
+                  <div key={exam.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-shrink-0">
+                        <Calendar className="h-8 w-8 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-lg">{exam.subject}</h4>
+                        <p className="text-gray-600">
+                          <Clock className="inline h-4 w-4 mr-1" />
+                          {exam.date} at {exam.time}
+                        </p>
+                        <p className="text-gray-500">
+                          <User className="inline h-4 w-4 mr-1" />
+                          Writer: {exam.writer}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant={exam.status === "confirmed" ? "default" : "secondary"}>{exam.status}</Badge>
+                      <Button variant="outline" size="sm">
+                        Details
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                    <div>
-                      <p className="text-sm font-medium">New writer assigned</p>
-                      <p className="text-xs text-gray-500">History assignment - 1 day ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
-                    <div>
-                      <p className="text-sm font-medium">Request submitted</p>
-                      <p className="text-xs text-gray-500">Science exam - 2 days ago</p>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </CardContent>
             </Card>
-          </div>
+          </TabsContent>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Profile Summary */}
+          <TabsContent value="history" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Profile</CardTitle>
+                <CardTitle>Exam History</CardTitle>
+                <CardDescription>Your completed exam sessions and results</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-3 mb-4">
-                  <Avatar className="w-12 h-12">
-                    <AvatarImage src="/placeholder-user.jpg" />
-                    <AvatarFallback>AS</AvatarFallback>
-                  </Avatar>
+              <CardContent className="space-y-4">
+                {recentExams.map((exam) => (
+                  <div key={exam.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-shrink-0">
+                        <CheckCircle className="h-8 w-8 text-green-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-lg">{exam.subject}</h4>
+                        <p className="text-gray-600">{exam.date}</p>
+                        <p className="text-gray-500">Writer: {exam.writer}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <Badge variant="outline" className="mb-2">
+                        {exam.status}
+                      </Badge>
+                      <p className="text-lg font-bold text-green-600">{exam.grade}</p>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Dashboard Settings</CardTitle>
+                <CardDescription>Customize your dashboard experience</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-semibold">Alex Smith</h4>
-                    <p className="text-sm text-gray-600">Computer Science Student</p>
+                    <h4 className="font-medium">Dark Mode</h4>
+                    <p className="text-sm text-gray-600">Toggle dark mode theme</p>
                   </div>
+                  <Button variant="outline" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+                    {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Profile Completion</span>
-                    <span>85%</span>
-                  </div>
-                  <Progress value={85} className="h-2" />
-                </div>
-                <Button variant="outline" className="w-full mt-4 bg-transparent" onClick={handleProfileClick}>
-                  View Profile
-                </Button>
-              </CardContent>
-            </Card>
 
-            {/* Upcoming Sessions */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5" />
-                  Upcoming Sessions
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="border-l-4 border-blue-500 pl-3">
-                    <p className="font-medium text-sm">Mathematics Exam</p>
-                    <p className="text-xs text-gray-600">Tomorrow, 2:00 PM</p>
-                    <p className="text-xs text-gray-500">with Sarah Johnson</p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium">Notifications</h4>
+                    <p className="text-sm text-gray-600">Manage notification preferences</p>
                   </div>
-                  <div className="border-l-4 border-green-500 pl-3">
-                    <p className="font-medium text-sm">History Assignment</p>
-                    <p className="text-xs text-gray-600">Jan 18, 10:00 AM</p>
-                    <p className="text-xs text-gray-500">with Michael Chen</p>
+                  <Button variant="outline" onClick={navigateToNotifications}>
+                    <Bell className="h-4 w-4 mr-2" />
+                    Configure
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium">Profile Settings</h4>
+                    <p className="text-sm text-gray-600">Update your profile information</p>
                   </div>
+                  <Button variant="outline" onClick={navigateToProfile}>
+                    <Settings className="h-4 w-4 mr-2" />
+                    Edit Profile
+                  </Button>
                 </div>
               </CardContent>
             </Card>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button variant="outline" className="w-full justify-start bg-transparent">
-                  <PlusCircle className="w-4 h-4 mr-2" />
-                  Request Writer
-                </Button>
-                <Button variant="outline" className="w-full justify-start bg-transparent">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule Session
-                </Button>
-                <Button variant="outline" className="w-full justify-start bg-transparent">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Settings
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )

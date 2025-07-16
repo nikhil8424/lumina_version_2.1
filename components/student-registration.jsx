@@ -1,45 +1,34 @@
 "use client"
+
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ArrowLeft, User } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { ArrowLeft, Eye, EyeOff } from "lucide-react"
 
 export default function StudentRegistration() {
+  const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
+    password: "",
+    confirmPassword: "",
     phone: "",
-    dateOfBirth: "",
     institution: "",
-    studyLevel: "",
-    fieldOfStudy: "",
-    visualImpairment: "",
-    assistiveTechnology: "",
+    studentId: "",
+    disability: "",
     accommodations: "",
     emergencyContact: "",
     emergencyPhone: "",
     agreeTerms: false,
   })
-
   const router = useRouter()
-
-  const handleBack = () => {
-    router.push("/login")
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Handle registration logic here
-    console.log("Student registration:", formData)
-    router.push("/student/dashboard")
-  }
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -48,218 +37,211 @@ export default function StudentRegistration() {
     }))
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    // Basic validation
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+      alert("Please fill in all required fields")
+      return
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match")
+      return
+    }
+
+    if (!formData.agreeTerms) {
+      alert("Please agree to the terms and conditions")
+      return
+    }
+
+    // Registration successful - redirect to dashboard
+    router.push("/student/dashboard")
+  }
+
+  const goBack = () => {
+    router.push("/login")
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center mb-8">
-          <Button variant="ghost" onClick={handleBack} className="mr-4 p-2" aria-label="Go back to login">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">Student Registration</h1>
-            <p className="text-gray-600">Join LUMINA as a student</p>
-          </div>
-        </div>
+        <Button variant="ghost" onClick={goBack} className="mb-4 text-blue-600 hover:text-blue-700">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Login
+        </Button>
 
         <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-blue-600">
-              <User className="w-5 h-5" />
-              Create Your Student Account
-            </CardTitle>
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-bold text-blue-900">Student Registration</CardTitle>
+            <CardDescription>Create your LUMINA student account</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Personal Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Personal Information</h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="firstName">First Name *</Label>
-                    <Input
-                      id="firstName"
-                      value={formData.firstName}
-                      onChange={(e) => handleInputChange("firstName", e.target.value)}
-                      placeholder="Enter your first name"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName">Last Name *</Label>
-                    <Input
-                      id="lastName"
-                      value={formData.lastName}
-                      onChange={(e) => handleInputChange("lastName", e.target.value)}
-                      placeholder="Enter your last name"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="email">Email Address *</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name *</Label>
                   <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="your.email@example.com"
+                    id="firstName"
+                    value={formData.firstName}
+                    onChange={(e) => handleInputChange("firstName", e.target.value)}
+                    className="text-lg p-3"
                     required
                   />
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange("phone", e.target.value)}
-                      placeholder="+1 (555) 123-4567"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                    <Input
-                      id="dateOfBirth"
-                      type="date"
-                      value={formData.dateOfBirth}
-                      onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input
+                    id="lastName"
+                    value={formData.lastName}
+                    onChange={(e) => handleInputChange("lastName", e.target.value)}
+                    className="text-lg p-3"
+                    required
+                  />
                 </div>
               </div>
 
-              {/* Academic Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Academic Information</h3>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  className="text-lg p-3"
+                  required
+                />
+              </div>
 
-                <div>
-                  <Label htmlFor="institution">Institution/School *</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password *</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={formData.password}
+                      onChange={(e) => handleInputChange("password", e.target.value)}
+                      className="text-lg p-3 pr-10"
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                    className="text-lg p-3"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  className="text-lg p-3"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="institution">Educational Institution</Label>
                   <Input
                     id="institution"
                     value={formData.institution}
                     onChange={(e) => handleInputChange("institution", e.target.value)}
-                    placeholder="Enter your school or university name"
-                    required
+                    className="text-lg p-3"
                   />
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="studyLevel">Level of Study *</Label>
-                    <Select onValueChange={(value) => handleInputChange("studyLevel", value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="high-school">High School</SelectItem>
-                        <SelectItem value="undergraduate">Undergraduate</SelectItem>
-                        <SelectItem value="graduate">Graduate</SelectItem>
-                        <SelectItem value="postgraduate">Postgraduate</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="fieldOfStudy">Field of Study</Label>
-                    <Input
-                      id="fieldOfStudy"
-                      value={formData.fieldOfStudy}
-                      onChange={(e) => handleInputChange("fieldOfStudy", e.target.value)}
-                      placeholder="e.g., Computer Science, Literature"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Accessibility Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Accessibility Information</h3>
-
-                <div>
-                  <Label htmlFor="visualImpairment">Visual Impairment Details</Label>
-                  <Textarea
-                    id="visualImpairment"
-                    value={formData.visualImpairment}
-                    onChange={(e) => handleInputChange("visualImpairment", e.target.value)}
-                    placeholder="Please describe your visual impairment and any relevant details"
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="assistiveTechnology">Assistive Technology Used</Label>
-                  <Textarea
-                    id="assistiveTechnology"
-                    value={formData.assistiveTechnology}
-                    onChange={(e) => handleInputChange("assistiveTechnology", e.target.value)}
-                    placeholder="e.g., Screen readers, magnification software, braille displays"
-                    rows={2}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="accommodations">Preferred Accommodations</Label>
-                  <Textarea
-                    id="accommodations"
-                    value={formData.accommodations}
-                    onChange={(e) => handleInputChange("accommodations", e.target.value)}
-                    placeholder="Describe any specific accommodations you need for exams or assignments"
-                    rows={3}
+                <div className="space-y-2">
+                  <Label htmlFor="studentId">Student ID</Label>
+                  <Input
+                    id="studentId"
+                    value={formData.studentId}
+                    onChange={(e) => handleInputChange("studentId", e.target.value)}
+                    className="text-lg p-3"
                   />
                 </div>
               </div>
 
-              {/* Emergency Contact */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Emergency Contact</h3>
+              <div className="space-y-2">
+                <Label htmlFor="disability">Type of Visual Impairment</Label>
+                <Select onValueChange={(value) => handleInputChange("disability", value)}>
+                  <SelectTrigger className="text-lg p-3">
+                    <SelectValue placeholder="Select your visual impairment type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="blind">Blind</SelectItem>
+                    <SelectItem value="low-vision">Low Vision</SelectItem>
+                    <SelectItem value="color-blind">Color Blind</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="emergencyContact">Emergency Contact Name</Label>
-                    <Input
-                      id="emergencyContact"
-                      value={formData.emergencyContact}
-                      onChange={(e) => handleInputChange("emergencyContact", e.target.value)}
-                      placeholder="Full name of emergency contact"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="emergencyPhone">Emergency Contact Phone</Label>
-                    <Input
-                      id="emergencyPhone"
-                      type="tel"
-                      value={formData.emergencyPhone}
-                      onChange={(e) => handleInputChange("emergencyPhone", e.target.value)}
-                      placeholder="+1 (555) 123-4567"
-                    />
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="accommodations">Required Accommodations</Label>
+                <Textarea
+                  id="accommodations"
+                  value={formData.accommodations}
+                  onChange={(e) => handleInputChange("accommodations", e.target.value)}
+                  placeholder="Describe any specific accommodations you need for exams..."
+                  className="text-lg p-3 min-h-[100px]"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="emergencyContact">Emergency Contact Name</Label>
+                  <Input
+                    id="emergencyContact"
+                    value={formData.emergencyContact}
+                    onChange={(e) => handleInputChange("emergencyContact", e.target.value)}
+                    className="text-lg p-3"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="emergencyPhone">Emergency Contact Phone</Label>
+                  <Input
+                    id="emergencyPhone"
+                    type="tel"
+                    value={formData.emergencyPhone}
+                    onChange={(e) => handleInputChange("emergencyPhone", e.target.value)}
+                    className="text-lg p-3"
+                  />
                 </div>
               </div>
 
-              {/* Terms and Conditions */}
-              <div className="flex items-start space-x-2">
+              <div className="flex items-center space-x-2">
                 <Checkbox
                   id="agreeTerms"
                   checked={formData.agreeTerms}
                   onCheckedChange={(checked) => handleInputChange("agreeTerms", checked)}
                 />
-                <Label htmlFor="agreeTerms" className="text-sm leading-relaxed">
-                  I agree to the Terms of Service and Privacy Policy. I understand that LUMINA will connect me with
-                  volunteer writers to assist with my academic needs.
+                <Label htmlFor="agreeTerms" className="text-sm">
+                  I agree to the Terms and Conditions and Privacy Policy *
                 </Label>
               </div>
 
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 py-3 text-lg"
-                disabled={!formData.agreeTerms}
-              >
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-lg p-3">
                 Create Student Account
               </Button>
             </form>

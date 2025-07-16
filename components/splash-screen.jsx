@@ -1,105 +1,99 @@
 "use client"
+
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Eye, Users, BookOpen, Heart } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { Eye, Users, BookOpen, Accessibility } from "lucide-react"
 
 export default function SplashScreen() {
-  const [isVisible, setIsVisible] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
-    setIsVisible(true)
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 2000)
+
+    return () => clearTimeout(timer)
   }, [])
 
   const handleGetStarted = () => {
     router.push("/login")
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <h1 className="text-4xl font-bold text-blue-900 mb-2">LUMINA</h1>
+          <p className="text-blue-700">Connecting minds, empowering education</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4">
-      <div
-        className={`max-w-4xl mx-auto text-center transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
-      >
-        {/* Logo and Title */}
-        <div className="mb-8">
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-green-500 rounded-full flex items-center justify-center shadow-lg">
-                <Eye className="w-12 h-12 text-white" />
-              </div>
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
-                <Heart className="w-4 h-4 text-white" />
-              </div>
-            </div>
-          </div>
-          <h1 className="text-5xl font-bold text-gray-800 mb-4">
-            <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">LUMINA</span>
-          </h1>
-          <p className="text-xl text-gray-600 mb-2">Illuminating Education Through Connection</p>
-          <p className="text-lg text-gray-500">Connecting visually impaired students with volunteer writers</p>
-        </div>
-
-        {/* Feature Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <Card className="border-2 border-blue-100 hover:border-blue-300 transition-colors duration-300">
-            <CardContent className="p-6">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                <Users className="w-6 h-6 text-blue-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Connect</h3>
-              <p className="text-gray-600">Match students with dedicated volunteer writers for personalized support</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-green-100 hover:border-green-300 transition-colors duration-300">
-            <CardContent className="p-6">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                <BookOpen className="w-6 h-6 text-green-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Learn</h3>
-              <p className="text-gray-600">Access educational content and exam assistance tailored to your needs</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-purple-100 hover:border-purple-300 transition-colors duration-300">
-            <CardContent className="p-6">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                <Heart className="w-6 h-6 text-purple-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Empower</h3>
-              <p className="text-gray-600">Build confidence and achieve academic success with compassionate support</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Call to Action */}
-        <div className="space-y-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-bold text-blue-900 mb-4">LUMINA</h1>
+          <p className="text-xl text-blue-700 mb-8">
+            Connecting visually impaired students with volunteer writers for accessible education
+          </p>
           <Button
             onClick={handleGetStarted}
             size="lg"
-            className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg"
           >
             Get Started
           </Button>
-          <p className="text-sm text-gray-500">Join our community of learners and supporters</p>
         </div>
 
-        {/* Stats */}
-        <div className="mt-16 grid grid-cols-3 gap-8 pt-8 border-t border-gray-200">
-          <div>
-            <div className="text-2xl font-bold text-blue-600">500+</div>
-            <div className="text-sm text-gray-600">Students Helped</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-green-600">200+</div>
-            <div className="text-sm text-gray-600">Volunteer Writers</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-purple-600">1000+</div>
-            <div className="text-sm text-gray-600">Exams Completed</div>
-          </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <Card className="text-center p-6 hover:shadow-lg transition-shadow">
+            <CardContent className="pt-6">
+              <Eye className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Accessibility First</h3>
+              <p className="text-gray-600">Designed with visually impaired students in mind</p>
+            </CardContent>
+          </Card>
+
+          <Card className="text-center p-6 hover:shadow-lg transition-shadow">
+            <CardContent className="pt-6">
+              <Users className="h-12 w-12 text-green-600 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Volunteer Network</h3>
+              <p className="text-gray-600">Connect with dedicated volunteer writers</p>
+            </CardContent>
+          </Card>
+
+          <Card className="text-center p-6 hover:shadow-lg transition-shadow">
+            <CardContent className="pt-6">
+              <BookOpen className="h-12 w-12 text-purple-600 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Exam Support</h3>
+              <p className="text-gray-600">Get help with exams and assignments</p>
+            </CardContent>
+          </Card>
+
+          <Card className="text-center p-6 hover:shadow-lg transition-shadow">
+            <CardContent className="pt-6">
+              <Accessibility className="h-12 w-12 text-orange-600 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Inclusive Design</h3>
+              <p className="text-gray-600">Built for everyone, accessible to all</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Already have an account?</p>
+          <Button
+            variant="outline"
+            onClick={handleGetStarted}
+            className="border-blue-600 text-blue-600 hover:bg-blue-50 bg-transparent"
+          >
+            Sign In
+          </Button>
         </div>
       </div>
     </div>
