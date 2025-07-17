@@ -7,32 +7,42 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Progress } from "@/components/ui/progress"
 import {
+  BookOpen,
   Calendar,
   Clock,
   User,
-  BookOpen,
-  Bell,
   Settings,
   LogOut,
-  CheckCircle,
-  Moon,
-  Sun,
-  Users,
   Star,
+  TrendingUp,
+  Bell,
+  MessageSquare,
+  CheckCircle,
+  AlertCircle,
+  Users,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 
 export default function WriterDashboard() {
   const [activeTab, setActiveTab] = useState("overview")
-  const { theme, setTheme } = useTheme()
   const router = useRouter()
+
+  // Mock data
+  const writerData = {
+    name: "Sarah Johnson",
+    email: "sarah.johnson@email.com",
+    subjects: ["Mathematics", "Physics", "Chemistry"],
+    rating: 4.9,
+    avatar: "/placeholder-user.jpg",
+  }
 
   const upcomingSessions = [
     {
       id: 1,
       student: "John Smith",
       subject: "Mathematics",
+      type: "Exam",
       date: "2024-01-20",
       time: "10:00 AM",
       duration: "2 hours",
@@ -40,8 +50,9 @@ export default function WriterDashboard() {
     },
     {
       id: 2,
-      student: "Emily Johnson",
-      subject: "History",
+      student: "Emily Davis",
+      subject: "Physics",
+      type: "Assignment",
       date: "2024-01-22",
       time: "2:00 PM",
       duration: "1.5 hours",
@@ -49,41 +60,78 @@ export default function WriterDashboard() {
     },
   ]
 
-  const completedSessions = [
+  const recentSessions = [
     {
       id: 1,
-      student: "Sarah Davis",
-      subject: "English Literature",
+      student: "Alex Wilson",
+      subject: "Chemistry",
+      type: "Lab Report",
       date: "2024-01-15",
-      duration: "2 hours",
-      status: "completed",
       rating: 5,
+      status: "completed",
     },
     {
       id: 2,
-      student: "Michael Brown",
-      subject: "Science",
-      date: "2024-01-10",
-      duration: "1.5 hours",
-      status: "completed",
+      student: "Maria Garcia",
+      subject: "Mathematics",
+      type: "Exam",
+      date: "2024-01-12",
       rating: 4,
+      status: "completed",
     },
   ]
+
+  const stats = {
+    totalSessions: 156,
+    completedSessions: 148,
+    averageRating: 4.9,
+    hoursVolunteered: 312,
+  }
 
   const handleLogout = () => {
     router.push("/")
   }
 
-  const navigateToProfile = () => {
+  const handleViewTasks = () => {
+    router.push("/writer/tasks")
+  }
+
+  const handleViewProfile = () => {
     router.push("/writer/profile")
   }
 
-  const navigateToAvailability = () => {
+  const handleViewAvailability = () => {
     router.push("/writer/availability")
   }
 
-  const navigateToTasks = () => {
-    router.push("/writer/tasks")
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "confirmed":
+        return "default"
+      case "pending":
+        return "secondary"
+      case "completed":
+        return "outline"
+      case "cancelled":
+        return "destructive"
+      default:
+        return "secondary"
+    }
+  }
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case "confirmed":
+        return <CheckCircle className="h-4 w-4" />
+      case "pending":
+        return <Clock className="h-4 w-4" />
+      case "completed":
+        return <CheckCircle className="h-4 w-4" />
+      case "cancelled":
+        return <AlertCircle className="h-4 w-4" />
+      default:
+        return <Clock className="h-4 w-4" />
+    }
   }
 
   return (
@@ -100,19 +148,13 @@ export default function WriterDashboard() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </Button>
-
               <Button variant="ghost" size="sm">
-                <Bell className="h-4 w-4" />
-                <Badge variant="destructive" className="ml-1 h-5 w-5 p-0 text-xs">
-                  2
-                </Badge>
+                <Bell className="h-4 w-4 mr-2" />
+                Notifications
               </Button>
 
-              <Button variant="ghost" size="sm" onClick={navigateToProfile}>
-                <User className="h-4 w-4 mr-2" />
+              <Button variant="ghost" size="sm" onClick={handleViewProfile}>
+                <Settings className="h-4 w-4 mr-2" />
                 Profile
               </Button>
 
@@ -130,27 +172,35 @@ export default function WriterDashboard() {
         <div className="mb-8">
           <div className="flex items-center space-x-4 mb-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src="/placeholder-user.jpg" alt="Writer" />
-              <AvatarFallback>SJ</AvatarFallback>
+              <AvatarImage src={writerData.avatar || "/placeholder.svg"} alt={writerData.name} />
+              <AvatarFallback>
+                {writerData.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </AvatarFallback>
             </Avatar>
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Welcome back, Sarah!</h2>
-              <p className="text-gray-600">Ready to help students succeed?</p>
+              <h2 className="text-3xl font-bold text-gray-900">Welcome back, {writerData.name}!</h2>
+              <div className="flex items-center space-x-4 text-gray-600">
+                <div className="flex items-center">
+                  <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                  <span>{writerData.rating} rating</span>
+                </div>
+                <span>•</span>
+                <span>{writerData.subjects.join(", ")}</span>
+              </div>
             </div>
           </div>
 
           <div className="flex space-x-4">
-            <Button onClick={navigateToAvailability} className="bg-green-600 hover:bg-green-700">
-              <Calendar className="h-4 w-4 mr-2" />
-              Manage Availability
-            </Button>
-            <Button
-              onClick={navigateToTasks}
-              variant="outline"
-              className="border-green-600 text-green-600 hover:bg-green-50 bg-transparent"
-            >
+            <Button onClick={handleViewTasks} className="bg-green-600 hover:bg-green-700">
               <BookOpen className="h-4 w-4 mr-2" />
               View Tasks
+            </Button>
+            <Button onClick={handleViewAvailability} variant="outline">
+              <Calendar className="h-4 w-4 mr-2" />
+              Manage Availability
             </Button>
           </div>
         </div>
@@ -161,42 +211,31 @@ export default function WriterDashboard() {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+            <TabsTrigger value="stats">Statistics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
                   <BookOpen className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">47</div>
-                  <p className="text-xs text-muted-foreground">+3 from last month</p>
+                  <div className="text-2xl font-bold">{stats.totalSessions}</div>
+                  <p className="text-xs text-muted-foreground">+12 from last month</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Upcoming Sessions</CardTitle>
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium">Completed</CardTitle>
+                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{upcomingSessions.length}</div>
-                  <p className="text-xs text-muted-foreground">Next: Tomorrow 10:00 AM</p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Students Helped</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">23</div>
-                  <p className="text-xs text-muted-foreground">Across all subjects</p>
+                  <div className="text-2xl font-bold">{stats.completedSessions}</div>
+                  <p className="text-xs text-muted-foreground">95% completion rate</p>
                 </CardContent>
               </Card>
 
@@ -206,58 +245,77 @@ export default function WriterDashboard() {
                   <Star className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">4.8</div>
-                  <p className="text-xs text-muted-foreground">Based on 35 reviews</p>
+                  <div className="text-2xl font-bold">{stats.averageRating}</div>
+                  <p className="text-xs text-muted-foreground">Excellent feedback</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Hours Volunteered</CardTitle>
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.hoursVolunteered}h</div>
+                  <p className="text-xs text-muted-foreground">This year</p>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Recent Activity */}
+            {/* Quick Actions and Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Upcoming Sessions</CardTitle>
-                  <CardDescription>Your scheduled writing sessions</CardDescription>
+                  <CardTitle>Quick Actions</CardTitle>
+                  <CardDescription>Common tasks and shortcuts</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {upcomingSessions.map((session) => (
-                    <div key={session.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium">{session.subject}</h4>
-                        <p className="text-sm text-gray-600">
-                          {session.date} at {session.time}
-                        </p>
-                        <p className="text-sm text-gray-500">Student: {session.student}</p>
-                        <p className="text-sm text-gray-500">Duration: {session.duration}</p>
-                      </div>
-                      <Badge variant={session.status === "confirmed" ? "default" : "secondary"}>{session.status}</Badge>
-                    </div>
-                  ))}
+                <CardContent className="space-y-3">
+                  <Button onClick={handleViewTasks} className="w-full justify-start bg-transparent" variant="outline">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    View All Tasks
+                  </Button>
+                  <Button
+                    onClick={handleViewAvailability}
+                    className="w-full justify-start bg-transparent"
+                    variant="outline"
+                  >
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Update Availability
+                  </Button>
+                  <Button onClick={handleViewProfile} className="w-full justify-start bg-transparent" variant="outline">
+                    <User className="h-4 w-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                  <Button className="w-full justify-start bg-transparent" variant="outline">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Contact Support
+                  </Button>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Recent Sessions</CardTitle>
-                  <CardDescription>Your completed writing sessions</CardDescription>
+                  <CardTitle>Recent Activity</CardTitle>
+                  <CardDescription>Your latest sessions and updates</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {completedSessions.map((session) => (
+                  {recentSessions.slice(0, 3).map((session) => (
                     <div key={session.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div>
                         <h4 className="font-medium">{session.subject}</h4>
-                        <p className="text-sm text-gray-600">{session.date}</p>
-                        <p className="text-sm text-gray-500">Student: {session.student}</p>
-                        <p className="text-sm text-gray-500">Duration: {session.duration}</p>
+                        <p className="text-sm text-gray-600">
+                          {session.type} with {session.student}
+                        </p>
+                        <p className="text-sm text-gray-500">{session.date}</p>
                       </div>
                       <div className="text-right">
-                        <Badge variant="outline" className="mb-1">
-                          {session.status}
-                        </Badge>
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                          <span className="text-sm font-medium">{session.rating}</span>
-                        </div>
+                        <Badge variant={getStatusColor(session.status)}>{session.status}</Badge>
+                        {session.rating && (
+                          <div className="flex items-center mt-1">
+                            <Star className="h-3 w-3 text-yellow-500 mr-1" />
+                            <span className="text-xs">{session.rating}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -269,37 +327,65 @@ export default function WriterDashboard() {
           <TabsContent value="upcoming" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Upcoming Writing Sessions</CardTitle>
-                <CardDescription>Manage your scheduled sessions</CardDescription>
+                <CardTitle>Upcoming Sessions</CardTitle>
+                <CardDescription>Your scheduled writing sessions</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {upcomingSessions.map((session) => (
-                  <div key={session.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex-shrink-0">
-                        <Calendar className="h-8 w-8 text-green-600" />
+                  <Card key={session.id} className="border-l-4 border-l-green-500">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-4 flex-1">
+                          <div className="flex-shrink-0">
+                            <BookOpen className="h-8 w-8 text-green-600" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-lg">
+                              {session.subject} - {session.type}
+                            </h4>
+                            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                              <span className="flex items-center">
+                                <User className="h-4 w-4 mr-1" />
+                                {session.student}
+                              </span>
+                              <span className="flex items-center">
+                                <Calendar className="h-4 w-4 mr-1" />
+                                {session.date}
+                              </span>
+                              <span className="flex items-center">
+                                <Clock className="h-4 w-4 mr-1" />
+                                {session.time} ({session.duration})
+                              </span>
+                            </div>
+                            <Badge variant={getStatusColor(session.status)}>
+                              {getStatusIcon(session.status)}
+                              <span className="ml-1">{session.status}</span>
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="flex flex-col space-y-2">
+                          <Button size="sm" variant="outline">
+                            View Details
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            Contact Student
+                          </Button>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-lg">{session.subject}</h4>
-                        <p className="text-gray-600">
-                          <Clock className="inline h-4 w-4 mr-1" />
-                          {session.date} at {session.time}
-                        </p>
-                        <p className="text-gray-500">
-                          <User className="inline h-4 w-4 mr-1" />
-                          Student: {session.student}
-                        </p>
-                        <p className="text-gray-500">Duration: {session.duration}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant={session.status === "confirmed" ? "default" : "secondary"}>{session.status}</Badge>
-                      <Button variant="outline" size="sm">
-                        Details
-                      </Button>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 ))}
+                {upcomingSessions.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">
+                    <Calendar className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                    <p className="text-lg">No upcoming sessions</p>
+                    <p>Check your tasks for new requests</p>
+                    <Button onClick={handleViewTasks} className="mt-4 bg-green-600 hover:bg-green-700">
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      View Tasks
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -308,74 +394,142 @@ export default function WriterDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Session History</CardTitle>
-                <CardDescription>Your completed writing sessions and ratings</CardDescription>
+                <CardDescription>Your completed writing sessions</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {completedSessions.map((session) => (
-                  <div key={session.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex-shrink-0">
-                        <CheckCircle className="h-8 w-8 text-green-600" />
+                {recentSessions.map((session) => (
+                  <Card key={session.id} className="border-l-4 border-l-blue-500">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-4 flex-1">
+                          <div className="flex-shrink-0">
+                            <CheckCircle className="h-8 w-8 text-blue-600" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-lg">
+                              {session.subject} - {session.type}
+                            </h4>
+                            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                              <span className="flex items-center">
+                                <User className="h-4 w-4 mr-1" />
+                                {session.student}
+                              </span>
+                              <span className="flex items-center">
+                                <Calendar className="h-4 w-4 mr-1" />
+                                {session.date}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Badge variant="outline">Completed</Badge>
+                              {session.rating && (
+                                <div className="flex items-center">
+                                  <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                                  <span className="font-medium">{session.rating}/5</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex flex-col space-y-2">
+                          <Button size="sm" variant="outline">
+                            View Report
+                          </Button>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-lg">{session.subject}</h4>
-                        <p className="text-gray-600">{session.date}</p>
-                        <p className="text-gray-500">Student: {session.student}</p>
-                        <p className="text-gray-500">Duration: {session.duration}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <Badge variant="outline" className="mb-2">
-                        {session.status}
-                      </Badge>
-                      <div className="flex items-center justify-end">
-                        <Star className="h-4 w-4 text-yellow-500 mr-1" />
-                        <span className="text-lg font-bold">{session.rating}</span>
-                      </div>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="settings" className="space-y-6">
+          <TabsContent value="stats" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Performance Metrics</CardTitle>
+                  <CardDescription>Track your volunteer impact</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Session Completion Rate</span>
+                      <span>95%</span>
+                    </div>
+                    <Progress value={95} className="h-2" />
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Average Rating</span>
+                      <span>4.9/5</span>
+                    </div>
+                    <Progress value={98} className="h-2" />
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Response Time</span>
+                      <span>Excellent</span>
+                    </div>
+                    <Progress value={92} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Subject Distribution</CardTitle>
+                  <CardDescription>Sessions by subject area</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Mathematics</span>
+                      <div className="flex items-center space-x-2">
+                        <Progress value={45} className="w-20 h-2" />
+                        <span className="text-sm text-gray-500">70 sessions</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Physics</span>
+                      <div className="flex items-center space-x-2">
+                        <Progress value={35} className="w-20 h-2" />
+                        <span className="text-sm text-gray-500">55 sessions</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Chemistry</span>
+                      <div className="flex items-center space-x-2">
+                        <Progress value={20} className="w-20 h-2" />
+                        <span className="text-sm text-gray-500">31 sessions</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card>
               <CardHeader>
-                <CardTitle>Dashboard Settings</CardTitle>
-                <CardDescription>Customize your dashboard experience</CardDescription>
+                <CardTitle>Achievements</CardTitle>
+                <CardDescription>Your volunteer milestones</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">Dark Mode</h4>
-                    <p className="text-sm text-gray-600">Toggle dark mode theme</p>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 border rounded-lg">
+                    <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                    <h4 className="font-semibold">Dedicated Volunteer</h4>
+                    <p className="text-sm text-gray-600">Completed 100+ sessions</p>
                   </div>
-                  <Button variant="outline" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-                    {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                  </Button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">Availability</h4>
-                    <p className="text-sm text-gray-600">Manage your availability schedule</p>
+                  <div className="text-center p-4 border rounded-lg">
+                    <Star className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
+                    <h4 className="font-semibold">Top Rated</h4>
+                    <p className="text-sm text-gray-600">Maintained 4.5+ star average</p>
                   </div>
-                  <Button variant="outline" onClick={navigateToAvailability}>
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Manage
-                  </Button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium">Profile Settings</h4>
-                    <p className="text-sm text-gray-600">Update your profile information</p>
+                  <div className="text-center p-4 border rounded-lg">
+                    <TrendingUp className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                    <h4 className="font-semibold">Impact Maker</h4>
+                    <p className="text-sm text-gray-600">300+ hours volunteered</p>
                   </div>
-                  <Button variant="outline" onClick={navigateToProfile}>
-                    <Settings className="h-4 w-4 mr-2" />
-                    Edit Profile
-                  </Button>
                 </div>
               </CardContent>
             </Card>
